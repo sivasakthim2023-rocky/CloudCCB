@@ -1,0 +1,13 @@
+### Create Admin User
+POST http://localhost:8082/api/users
+Content-Type: application/json
+
+{
+  "name": "CloudCCB Admin",
+  "email": "admin@cloudccb.com",
+  "password": "admin123",
+  "role": "ADMIN"
+}
+
+### Get All Users
+GET http://localhost:8082/api/users
