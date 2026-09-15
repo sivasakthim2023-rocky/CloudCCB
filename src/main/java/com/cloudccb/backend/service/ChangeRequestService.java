@@ -2,6 +2,7 @@ package com.cloudccb.backend.service;
 
 import com.cloudccb.backend.entity.ChangeRequest;
 import com.cloudccb.backend.entity.StatusHistory;
+import com.cloudccb.backend.entity.User;
 import com.cloudccb.backend.repository.ChangeRequestRepository;
 import com.cloudccb.backend.repository.StatusHistoryRepository;
 import com.cloudccb.backend.repository.UserRepository;
@@ -31,6 +32,15 @@ public class ChangeRequestService {
     // Create a new change request
     public ChangeRequest createChangeRequest(
             ChangeRequest changeRequest) {
+
+        if (changeRequest.getCreatedAt() == null) {
+            changeRequest.setCreatedAt(LocalDateTime.now());
+        }
+
+        if (changeRequest.getStatus() == null ||
+                changeRequest.getStatus().isBlank()) {
+            changeRequest.setStatus("PENDING");
+        }
 
         ChangeRequest savedRequest =
                 changeRequestRepository.save(changeRequest);
@@ -82,7 +92,7 @@ public class ChangeRequestService {
                 .findByAssignedToId(userId);
     }
 
-    // Assign a developer to a change request
+    // Assign developer to a change request
     public Optional<ChangeRequest> assignDeveloper(
             Long changeRequestId,
             Long developerId) {
@@ -96,26 +106,28 @@ public class ChangeRequestService {
 
         ChangeRequest request = requestOptional.get();
 
-        Optional<com.cloudccb.backend.entity.User> developerOptional =
+        Optional<User> developerOptional =
                 userRepository.findById(developerId);
 
         if (developerOptional.isEmpty()) {
             return Optional.empty();
         }
 
-        request.setAssignedTo(developerOptional.get());
+        User developer = developerOptional.get();
+
+        request.setAssignedTo(developer);
         request.setStatus("ASSIGNED");
         request.setUpdatedAt(LocalDateTime.now());
 
         ChangeRequest savedRequest =
                 changeRequestRepository.save(request);
 
-        // Record status change
+        // Record assignment in status history
         recordStatusHistory(
                 savedRequest,
                 "ASSIGNED",
                 "Developer assigned to change request",
-                developerOptional.get()
+                developer
         );
 
         return Optional.of(savedRequest);
@@ -126,6 +138,7 @@ public class ChangeRequestService {
             Long changeRequestId,
             String status,
             String implementationNotes,
+            String repositoryUrl,
             String gitCommitId,
             String branchName) {
 
@@ -140,6 +153,7 @@ public class ChangeRequestService {
 
         request.setStatus(status.toUpperCase());
         request.setImplementationNotes(implementationNotes);
+        request.setRepositoryUrl(repositoryUrl);
         request.setGitCommitId(gitCommitId);
         request.setBranchName(branchName);
         request.setUpdatedAt(LocalDateTime.now());
@@ -151,7 +165,7 @@ public class ChangeRequestService {
         ChangeRequest savedRequest =
                 changeRequestRepository.save(request);
 
-        // Record developer progress
+        // Record progress in status history
         recordStatusHistory(
                 savedRequest,
                 status.toUpperCase(),
@@ -167,7 +181,7 @@ public class ChangeRequestService {
             ChangeRequest changeRequest,
             String status,
             String comments,
-            com.cloudccb.backend.entity.User changedBy) {
+            User changedBy) {
 
         if (status == null) {
             return;

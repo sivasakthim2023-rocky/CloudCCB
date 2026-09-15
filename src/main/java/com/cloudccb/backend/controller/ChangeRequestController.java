@@ -14,7 +14,9 @@ public class ChangeRequestController {
 
     private final ChangeRequestService changeRequestService;
 
-    public ChangeRequestController(ChangeRequestService changeRequestService) {
+    public ChangeRequestController(
+            ChangeRequestService changeRequestService) {
+
         this.changeRequestService = changeRequestService;
     }
 
@@ -24,7 +26,9 @@ public class ChangeRequestController {
             @RequestBody ChangeRequest changeRequest) {
 
         return ResponseEntity.ok(
-                changeRequestService.createChangeRequest(changeRequest)
+                changeRequestService.createChangeRequest(
+                        changeRequest
+                )
         );
     }
 
@@ -42,7 +46,8 @@ public class ChangeRequestController {
     public ResponseEntity<ChangeRequest> getChangeRequestById(
             @PathVariable Long id) {
 
-        return changeRequestService.getChangeRequestById(id)
+        return changeRequestService
+                .getChangeRequestById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -87,7 +92,10 @@ public class ChangeRequestController {
             @PathVariable Long developerId) {
 
         return changeRequestService
-                .assignDeveloper(changeRequestId, developerId)
+                .assignDeveloper(
+                        changeRequestId,
+                        developerId
+                )
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -97,15 +105,21 @@ public class ChangeRequestController {
     public ResponseEntity<ChangeRequest> updateProgress(
             @PathVariable Long changeRequestId,
             @RequestParam String status,
-            @RequestParam(required = false) String implementationNotes,
-            @RequestParam(required = false) String gitCommitId,
-            @RequestParam(required = false) String branchName) {
+            @RequestParam(required = false)
+            String implementationNotes,
+            @RequestParam(required = false)
+            String repositoryUrl,
+            @RequestParam(required = false)
+            String gitCommitId,
+            @RequestParam(required = false)
+            String branchName) {
 
         return changeRequestService
                 .updateProgress(
                         changeRequestId,
                         status,
                         implementationNotes,
+                        repositoryUrl,
                         gitCommitId,
                         branchName
                 )
@@ -119,6 +133,7 @@ public class ChangeRequestController {
             @PathVariable Long id) {
 
         changeRequestService.deleteChangeRequest(id);
+
         return ResponseEntity.noContent().build();
     }
 }

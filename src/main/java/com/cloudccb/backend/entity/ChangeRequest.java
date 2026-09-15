@@ -28,6 +28,9 @@ public class ChangeRequest {
     // Developer implementation details
     private String implementationNotes;
 
+    // Git/GitHub traceability
+    private String repositoryUrl;
+
     private String gitCommitId;
 
     private String branchName;
@@ -49,12 +52,21 @@ public class ChangeRequest {
     public ChangeRequest() {
     }
 
-    public ChangeRequest(String title, String description, String priority,
-                         String status, LocalDateTime createdAt,
-                         LocalDateTime updatedAt, String implementationNotes,
-                         String gitCommitId, String branchName,
-                         LocalDateTime completedAt, Project project,
-                         User requestedBy, User assignedTo) {
+    public ChangeRequest(
+            String title,
+            String description,
+            String priority,
+            String status,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt,
+            String implementationNotes,
+            String repositoryUrl,
+            String gitCommitId,
+            String branchName,
+            LocalDateTime completedAt,
+            Project project,
+            User requestedBy,
+            User assignedTo) {
 
         this.title = title;
         this.description = description;
@@ -63,6 +75,7 @@ public class ChangeRequest {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.implementationNotes = implementationNotes;
+        this.repositoryUrl = repositoryUrl;
         this.gitCommitId = gitCommitId;
         this.branchName = branchName;
         this.completedAt = completedAt;
@@ -133,6 +146,14 @@ public class ChangeRequest {
 
     public void setImplementationNotes(String implementationNotes) {
         this.implementationNotes = implementationNotes;
+    }
+
+    public String getRepositoryUrl() {
+        return repositoryUrl;
+    }
+
+    public void setRepositoryUrl(String repositoryUrl) {
+        this.repositoryUrl = repositoryUrl;
     }
 
     public String getGitCommitId() {
